@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+				  xmlns:gs="http://beginningsoap.example.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <gs:deleteUserByLoginRequest>
+
+        <gs:login>werdont</gs:login>
+        <gs:password>qwerty123QWERTY</gs:password>
+        <gs:targetUserLogin>test2</gs:targetUserLogin>
+        
+      </gs:deleteUserByLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>

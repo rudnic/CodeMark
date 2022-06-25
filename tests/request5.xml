@@ -1,0 +1,30 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+				  xmlns:gs="http://beginningsoap.example.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <gs:modifyUserRequest>
+
+        <gs:login>rudnic</gs:login>
+        <gs:password>pAssWord123</gs:password>
+
+        <gs:user>
+            <gs:login>qwe</gs:login>
+
+                <gs:name>Modified Kate</gs:name>
+
+                <gs:password>qwerty123QWERTY</gs:password>
+
+                <gs:roles>
+                    <gs:id>0</gs:id>
+                    <gs:name>user</gs:name>
+                </gs:roles>
+                    
+                <gs:roles>
+                    <gs:id>1</gs:id>
+                    <gs:name>moderator</gs:name>
+                </gs:roles>
+                    
+        </gs:user>
+      </gs:modifyUserRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
