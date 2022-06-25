@@ -1,11 +1,15 @@
 package com.example.beginningsoap.services;
 
 import com.example.beginningsoap.ModifyUserResponse;
+import com.example.beginningsoap.models.Role;
 import com.example.beginningsoap.models.User;
 import com.example.beginningsoap.repository.DatabaseUserRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -73,5 +77,53 @@ public class UserServiceImpl implements UserService {
 
         response.setSuccess(true);
         return response;
+    }
+
+    @Override
+    public void modifyUser(com.example.beginningsoap.User soapUser) {
+        User user = getUserByLogin(soapUser.getLogin());
+        soapUser.setId(user.getId());
+        BeanUtils.copyProperties(soapUser, user);
+
+        soapUser.getRoles().forEach((el) -> {
+            Role role = new Role();
+            BeanUtils.copyProperties(el, role);
+            user.getRoles().add(role);
+        });
+
+        saveUser(user);
+    }
+
+    @Override
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserByLogin(String login) {
+        userRepository.deleteUserByLogin(login);
+    }
+
+    @Override
+    public void addUser(com.example.beginningsoap.User soapUser) {
+        User newUser = new User();
+        // BeanUtils.copyProperties(soapNewUser, user);
+        newUser.setLogin(soapUser.getLogin());
+        newUser.setName(soapUser.getName());
+        newUser.setPassword(soapUser.getPassword());
+        newUser.setRoles(new HashSet<>());
+
+        /* Также не получится просто так назначить роли
+            Так, как классы разные
+        */
+        soapUser.getRoles().forEach((el) -> {
+            // com.example.beginningsoap.models.Role role = roleRepository.getRoleById(el.getId());
+            com.example.beginningsoap.models.Role role = new com.example.beginningsoap.models.Role();
+            BeanUtils.copyProperties(el, role);
+            newUser.getRoles().add(role);
+        });
+
+        saveUser(newUser);
     }
 }

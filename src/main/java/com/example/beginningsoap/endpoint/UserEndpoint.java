@@ -3,17 +3,13 @@ package com.example.beginningsoap.endpoint;
 import com.example.beginningsoap.*;
 import com.example.beginningsoap.models.User;
 
-import com.example.beginningsoap.repository.DatabaseRoleRepository;
-import com.example.beginningsoap.repository.DatabaseUserRepository;
 import com.example.beginningsoap.services.UserService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,19 +19,13 @@ public class UserEndpoint {
 
     private final UserService userService;
 
-    private final DatabaseUserRepository userRepository;
-
-    private final DatabaseRoleRepository roleRepository;
-
-    public UserEndpoint(DatabaseUserRepository userRepository, DatabaseRoleRepository roleRepository, UserService userService) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+    public UserEndpoint(UserService userService) {
         this.userService = userService;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getUserByLoginRequest")
     @ResponsePayload
-    public GetUserResponse getUser(@RequestPayload GetUserByLoginRequest request) {
+    public GetUserResponse getUserByLogin(@RequestPayload GetUserByLoginRequest request) {
         GetUserResponse response = new GetUserResponse();
         com.example.beginningsoap.User soapUser = new com.example.beginningsoap.User();
         BeanUtils.copyProperties(userService.getUserByLogin(request.getLogin()), soapUser);
@@ -104,23 +94,7 @@ public class UserEndpoint {
 
         ModifyUserResponse response;
 
-
-/*        if (userService.isEmptyUser(request.getLogin())) {
-            response.setSuccess(false);
-            response.setError("User with this username not found");
-
-            return response;
-        }
-
-        *//* Проверка на пароль пользователя *//*
-        if (!userService.isCorrectPassword(request.getLogin(), request.getPassword())) {
-            response.setSuccess(false);
-            response.setError("Incorrect password");
-
-            return response;
-        }*/
-
-        /* Проверка, есть ли пользователь с таким логином и правильный ли пароль*/
+        /* Проверка данных пользователя (лог, пасс) */
         response = userService.checkUserCredentials(request.getLogin(), request.getPassword());
         if (!response.isSuccess()) {
             return response;
@@ -144,24 +118,7 @@ public class UserEndpoint {
             return response;
         }
 
-        /* BeanUtils не копирует атрибуты из soap пользователя в сущность, поэтому работаем ручками =) */
-        com.example.beginningsoap.User soapNewUser = request.getUser();
-        User newUser = new User();
-        // BeanUtils.copyProperties(soapNewUser, user);
-        newUser.setLogin(soapNewUser.getLogin());
-        newUser.setName(soapNewUser.getName());
-        newUser.setPassword(soapNewUser.getPassword());
-        newUser.setRoles(new HashSet<>());
-
-        /* Также не получится просто так назначить роли
-            Так, как классы разные
-        */
-        soapNewUser.getRoles().forEach((el) -> {
-            com.example.beginningsoap.models.Role role = roleRepository.getRoleById(el.getId());
-            newUser.getRoles().add(role);
-        });
-
-        userService.saveUser(newUser);
+        userService.addUser(request.getUser());
         response.setSuccess(true);
         response.setError(null);
         return response;
@@ -173,30 +130,22 @@ public class UserEndpoint {
 
         ModifyUserResponse response;
 
-        /* Проверка, есть ли пользователь с таким логином */
-/*        if (userService.isEmptyUser(request.getLogin())) {
-            response.setSuccess(false);
-            response.setError("User with this username not found");
-
-            return response;
-        }
-
-        *//* Проверка на пароль пользователя *//*
-        if (!userService.isCorrectPassword(request.getLogin(), request.getPassword())) {
-            response.setSuccess(false);
-            response.setError("Incorrect password");
-
-            return response;
-        }*/
-
         // TODO: модификация
-        /* Проверка, есть ли пользователь с таким логином и правильный ли пароль*/
+        /* Проверка данных пользователя (лог, пасс) */
         response = userService.checkUserCredentials(request.getLogin(), request.getPassword());
         if (!response.isSuccess()) {
             return response;
         }
 
-        response = userService.checkUserCredentials(request.getLogin(), request.getPassword());
+        if (userService.getUserByLogin(request.getUser().getLogin()) == null) {
+            response.setSuccess(false);
+            response.setError("Modifying user doesn't exist");
+
+            return response;
+        }
+
+        userService.modifyUser(request.getUser());
+        response.setSuccess(true);
 
         return response;
     }
@@ -206,19 +155,45 @@ public class UserEndpoint {
     public ModifyUserResponse deleteUserById(@RequestPayload DeleteUserByIdRequest request) {
         ModifyUserResponse response;
 
+        /* Проверка данных пользователя (лог, пасс) */
         response = userService.checkUserCredentials(request.getLogin(), request.getPassword());
         if (!response.isSuccess()) {
             return response;
         }
 
-        // TODO: удаление
-        return null;
+        if (userService.getUserById(request.getTargetUserId()) == null) {
+            response.setSuccess(false);
+            response.setError("Deleting user doesn't exist");
+
+            return response;
+        }
+
+        userService.deleteUserById(request.getTargetUserId());
+        response.setSuccess(true);
+
+        return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteUserByLoginRequest")
     @ResponsePayload
     public ModifyUserResponse deleteUserByLogin(@RequestPayload DeleteUserByLoginRequest request) {
+        ModifyUserResponse response;
 
-        return null;
+        response = userService.checkUserCredentials(request.getLogin(), request.getPassword());
+        if (!response.isSuccess()) {
+            return response;
+        }
+
+        if (userService.getUserByLogin(request.getTargetUserLogin()) == null) {
+            response.setSuccess(false);
+            response.setError("Deleting user doesn't exist");
+
+            return response;
+        }
+
+        userService.deleteUserByLogin(request.getTargetUserLogin());
+        response.setSuccess(true);
+
+        return response;
     }
 }

@@ -11,7 +11,6 @@ import java.util.Optional;
 public interface DatabaseUserRepository extends JpaRepository<User, Long> {
     public User getUserByLogin(String login);
     public User getUserById(Long id);
-
     public Optional<User> findByLogin(String login);
-
+    public void deleteUserByLogin(String login);
 }

@@ -2,17 +2,14 @@ package com.example.beginningsoap.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
-@ToString
 public class User {
 
     @Id
@@ -31,6 +28,10 @@ public class User {
             @JoinColumn(name = "role_id")
     })
     private Set<Role> roles;
+
+    public String toString() {
+        return this.getId().toString() + " " + this.getLogin() + " " + this.getName() + " " + this.getPassword();
+    }
 
 }
 

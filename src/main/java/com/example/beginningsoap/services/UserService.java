@@ -15,4 +15,8 @@ public interface UserService {
     public List<User> getAllUsers();
     public User getUserByLogin(String login);
     public void saveUser(User user);
+    public void modifyUser(com.example.beginningsoap.User soapUser);
+    public void deleteUserById(Long id);
+    public void deleteUserByLogin(String login);
+    public void addUser(com.example.beginningsoap.User soapUser);
 }
