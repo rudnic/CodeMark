@@ -6,7 +6,7 @@
 
         <gs:login>werdont</gs:login>
         <gs:password>qwerty123QWERTY</gs:password>
-        <gs:targetUserLogin>test2</gs:targetUserLogin>
+        <gs:targetUserLogin>test123</gs:targetUserLogin>
         
       </gs:deleteUserByLoginRequest>
    </soapenv:Body>

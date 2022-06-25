@@ -1,0 +1,21 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header />
+    <SOAP-ENV:Body>
+        <ns2:getUserResponse xmlns:ns2="http://beginningsoap.example.com">
+            <ns2:user>
+                <ns2:id>62</ns2:id>
+                <ns2:login>test123</ns2:login>
+                <ns2:name>Modified testUser</ns2:name>
+                <ns2:password>qwerty123QWERTY</ns2:password>
+                <ns2:roles>
+                    <ns2:id>0</ns2:id>
+                    <ns2:name>user</ns2:name>
+                </ns2:roles>
+                <ns2:roles>
+                    <ns2:id>1</ns2:id>
+                    <ns2:name>moderator</ns2:name>
+                </ns2:roles>
+            </ns2:user>
+        </ns2:getUserResponse>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

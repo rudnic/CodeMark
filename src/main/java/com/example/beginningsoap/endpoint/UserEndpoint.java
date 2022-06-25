@@ -29,6 +29,16 @@ public class UserEndpoint {
         GetUserResponse response = new GetUserResponse();
         com.example.beginningsoap.User soapUser = new com.example.beginningsoap.User();
         BeanUtils.copyProperties(userService.getUserByLogin(request.getLogin()), soapUser);
+
+        /* Берём пользователя из БД */
+        User dbUser = userService.getUserByLogin(request.getLogin());
+
+        dbUser.getRoles().forEach((el) -> {
+            Role soapRole = new Role();
+            BeanUtils.copyProperties(el, soapRole);
+            soapUser.getRoles().add(soapRole);
+        });
+
         response.setUser(soapUser);
 
         return response;
@@ -43,11 +53,10 @@ public class UserEndpoint {
         com.example.beginningsoap.User soapUser = new com.example.beginningsoap.User();
 
         /* Берём пользователя из БД */
-        User dbUser = userService.getUserById(request.getTargetId());
+        User dbUser = userService.getUserById(request.getId());
 
         /* Копирование в созданный класс свойств из объекта БД */
         BeanUtils.copyProperties(dbUser, soapUser);
-        response.setUser(soapUser);
 
         /* Также клонируем список ролей */
         dbUser.getRoles().forEach((el) -> {
@@ -55,6 +64,8 @@ public class UserEndpoint {
             BeanUtils.copyProperties(el, soapRole);
             soapUser.getRoles().add(soapRole);
         });
+
+        response.setUser(soapUser);
 
         return response;
     }
@@ -75,12 +86,6 @@ public class UserEndpoint {
             com.example.beginningsoap.User soapUser = new com.example.beginningsoap.User();
             BeanUtils.copyProperties(el, soapUser);
 
-            /* Также клонируем список ролей */
-            el.getRoles().forEach((_el) -> {
-                Role soapRole = new Role();
-                BeanUtils.copyProperties(_el, soapRole);
-                soapUser.getRoles().add(soapRole);
-            });
             soapUsersList.add(soapUser);
 
         });

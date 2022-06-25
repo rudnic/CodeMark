@@ -3,7 +3,7 @@
    <soapenv:Header/>
    <soapenv:Body>
       <gs:getUserByLoginRequest>
-         <gs:login>rudnic</gs:login>
+         <gs:login>test123</gs:login>
       </gs:getUserByLoginRequest>
    </soapenv:Body>
 </soapenv:Envelope>

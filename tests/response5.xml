@@ -1,0 +1,1 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/><SOAP-ENV:Body><ns2:modifyUserResponse xmlns:ns2="http://beginningsoap.example.com"><ns2:success>true</ns2:success></ns2:modifyUserResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
